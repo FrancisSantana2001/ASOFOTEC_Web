@@ -16,6 +16,8 @@ builder.Services.AddDbContext<AppdbContext>(Option => Option.UseSqlServer(connec
 
 builder.Services.AddScoped<UserService>();
 
+builder.Services.AddScoped<ISystemService, SystemService>();
+
 //Keyed Services
 builder.Services.AddKeyedSingleton<IRandomService, RandomService>("RandomKeySingleton");
 builder.Services.AddKeyedScoped<IRandomService, RandomService>("RandomKeyScoped");

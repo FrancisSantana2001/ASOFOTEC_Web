@@ -1,5 +1,6 @@
 ﻿using ASOFOTEC_Web.Data;
 using ASOFOTEC_Web.DTOs;
+using ASOFOTEC_Web.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,23 +12,25 @@ namespace ASOFOTEC_Web.Controllers
     public class SystemController : ControllerBase
     {
         private AppdbContext _context;
+        private ISystemService _systemService;
 
-        public SystemController(AppdbContext context)
+        public SystemController(AppdbContext context, SystemService systemService)
         {
             _context = context;
+            _systemService = systemService;
         }
 
         [HttpGet]
         public async Task<IEnumerable<SystemDto>> GetSystem()
         {
-            return await _context.Systems.Select(S => new SystemDto
-            {
-                SystemID = S.SystemID,
-                SystemName = S.SystemName,
-                DateDeveloped = S.DateDeveloped,
-                Description = S.Description,
-                DeveloperName = S.DeveloperName
-            }).ToListAsync();
+            return await _systemService.GetSystem();
+        }
+
+        [HttpGet ("{id}")]
+        public async Task <ActionResult<SystemDto>>GetbyId(int id)
+        {
+            var system = await _systemService.GetbyId(id);
+            return system == null ? NotFound() : Ok(system);
         }
 
         [HttpPost]
