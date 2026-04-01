@@ -36,56 +36,24 @@ namespace ASOFOTEC_Web.Controllers
         [HttpPost]
         public async Task<ActionResult<SystemDto>> Insert(InsertSystemDto insertSystem)
         {
-            var System = new Models.Systems
-            {
-                SystemName = insertSystem.SystemName,
-                Description = insertSystem.Description,
-                DeveloperName = insertSystem.DeveloperName,
-                DateDeveloped = insertSystem.DateDeveloped
-            };
+            var SystemDto = await _systemService.Insert(insertSystem);
 
-            await _context.Systems.AddAsync(System);
-            await _context.SaveChangesAsync();
-
-            var SystemDto = new SystemDto
-            {
-                SystemID = System.SystemID,
-                SystemName = System.SystemName,
-                Description = System.Description,
-                DeveloperName = System.DeveloperName,
-                DateDeveloped = System.DateDeveloped
-            };
-
-            return CreatedAtAction(nameof(GetSystem), new { id = SystemDto.SystemID }, SystemDto);
+            return CreatedAtAction(nameof(GetbyId), new { id = SystemDto.SystemID }, SystemDto);
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult> Update(int id, UpdateSystemDto updateSystem)
         {
-            var existingSystem = await _context.Systems.FindAsync(id);
-            if (existingSystem == null)
-            {
-                return NotFound();
-            }
-            existingSystem.SystemName = updateSystem.SystemName;
-            existingSystem.Description = updateSystem.Description;
-            existingSystem.DeveloperName = updateSystem.DeveloperName;
-            existingSystem.DateDeveloped = updateSystem.DateDeveloped;
-            await _context.SaveChangesAsync();
-            return Ok();
+            var system = await _systemService.Update(id, updateSystem);
+
+            return system == null ? NotFound() : Ok(system);
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         { 
-            var ExSystem = await _context.Systems.FindAsync(id);
-            if(ExSystem == null)
-            {
-                return NotFound();
-            }
-            _context.Systems.Remove(ExSystem);
-            await _context.SaveChangesAsync();
-            return NoContent();
+           var systemDto = await _systemService.Delete(id);
+            return systemDto == null ? NotFound() : Ok(systemDto);
 
         }
     }

@@ -14,6 +14,7 @@ namespace ASOFOTEC_Web.Validators
             RuleFor(P => P.Phone).NotEmpty();
             RuleFor(c => c.Country).NotEmpty();
             RuleFor(B => B.Age)
+                .NotEmpty()
                 .NotNull()
                 .GreaterThanOrEqualTo(18)
                 .LessThanOrEqualTo(99);

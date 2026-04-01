@@ -26,6 +26,7 @@ namespace ASOFOTEC_Web.Services
                     Description = system.Description,
                     DeveloperName = system.DeveloperName
                 };
+
                 return systemDto;
             }
             return null;
@@ -44,16 +45,75 @@ namespace ASOFOTEC_Web.Services
             }).ToListAsync();
         }
 
-        public Task<SystemDto> Insert(InsertSystemDto insertSystem)
+        public async Task<SystemDto> Insert(InsertSystemDto insertSystem)
         {
-            throw new NotImplementedException();
+            var System = new Models.Systems
+            {
+                SystemName = insertSystem.SystemName,
+                Description = insertSystem.Description,
+                DeveloperName = insertSystem.DeveloperName,
+                DateDeveloped = insertSystem.DateDeveloped
+            };
+
+            await _Context.Systems.AddAsync(System);
+            await _Context.SaveChangesAsync();
+
+            var SystemDto = new SystemDto
+            {
+                SystemID = System.SystemID,
+                SystemName = System.SystemName,
+                Description = System.Description,
+                DeveloperName = System.DeveloperName,
+                DateDeveloped = System.DateDeveloped
+            };
+
+           return SystemDto;
         }
 
-        public Task<SystemDto> Update(int id, UpdateSystemDto updateSystem)
+        public async Task<SystemDto> Update(int id, UpdateSystemDto updateSystem)
         {
-            throw new NotImplementedException();
+            var existingSystem = await _Context.Systems.FindAsync(id);
+
+            if(existingSystem != null)
+            {
+                existingSystem.SystemName = updateSystem.SystemName;
+                existingSystem.Description = updateSystem.Description;
+                existingSystem.DeveloperName = updateSystem.DeveloperName;
+                existingSystem.DateDeveloped = updateSystem.DateDeveloped;
+                await _Context.SaveChangesAsync();
+                var systemDto = new SystemDto
+                {
+                    SystemID = existingSystem.SystemID,
+                    SystemName = existingSystem.SystemName,
+                    Description = existingSystem.Description,
+                    DeveloperName = existingSystem.DeveloperName,
+                    DateDeveloped = existingSystem.DateDeveloped
+                };
+                return systemDto;
+            }
+
+            return null;
         }
 
-        public async Task<SystemDto> Delete(int id) =>
+        public async Task<SystemDto> Delete(int id)
+        {
+            var SystemDelete = await _Context.Systems.FindAsync(id);
+
+            if (SystemDelete != null)
+            {
+                var systemDto = new SystemDto
+                {
+                    SystemID = SystemDelete.SystemID,
+                    SystemName = SystemDelete.SystemName,
+                    Description = SystemDelete.Description,
+                    DeveloperName = SystemDelete.DeveloperName,
+                    DateDeveloped = SystemDelete.DateDeveloped
+                };
+                _Context.Systems.Remove(SystemDelete);
+                await _Context.SaveChangesAsync();
+                return systemDto;
+            }
+            return null;
+        }
     }
 }
