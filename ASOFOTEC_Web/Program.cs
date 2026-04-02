@@ -1,3 +1,4 @@
+using ASOFOTEC_Web.AutoMapper;
 using ASOFOTEC_Web.Data;
 using ASOFOTEC_Web.DTOs;
 using ASOFOTEC_Web.Services;
@@ -42,6 +43,9 @@ builder.Services.AddHttpClient<IPostSeviceUser, PostServiceUser>(P =>
 {
     P.BaseAddress = new Uri("https://localhost:7032/");
 });
+
+//Add AutoMappers to The Project
+builder.Services.AddAutoMapper(typeof(MapperProfile));
 
 var app = builder.Build();
 

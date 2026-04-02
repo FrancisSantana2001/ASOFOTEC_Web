@@ -1,5 +1,7 @@
 ﻿using ASOFOTEC_Web.Data;
 using ASOFOTEC_Web.DTOs;
+using ASOFOTEC_Web.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,9 +10,11 @@ namespace ASOFOTEC_Web.Services
     public class SystemService : ISystemService
     {
         private AppdbContext _Context;
-        public SystemService( AppdbContext DbContext)
+        private IMapper _Mapper;
+        public SystemService( AppdbContext DbContext, IMapper Mapper)
         {
             _Context = DbContext;
+            _Mapper = Mapper;
         }
 
         public async Task<SystemDto> GetbyId(int id)
@@ -47,27 +51,14 @@ namespace ASOFOTEC_Web.Services
 
         public async Task<SystemDto> Insert(InsertSystemDto insertSystem)
         {
-            var System = new Models.Systems
-            {
-                SystemName = insertSystem.SystemName,
-                Description = insertSystem.Description,
-                DeveloperName = insertSystem.DeveloperName,
-                DateDeveloped = insertSystem.DateDeveloped
-            };
+            var System = _Mapper.Map<Systems>(insertSystem);
 
             await _Context.Systems.AddAsync(System);
             await _Context.SaveChangesAsync();
 
-            var SystemDto = new SystemDto
-            {
-                SystemID = System.SystemID,
-                SystemName = System.SystemName,
-                Description = System.Description,
-                DeveloperName = System.DeveloperName,
-                DateDeveloped = System.DateDeveloped
-            };
+            var SystemDto = _Mapper.Map<SystemDto>(System);
 
-           return SystemDto;
+            return SystemDto;
         }
 
         public async Task<SystemDto> Update(int id, UpdateSystemDto updateSystem)
